@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BŪSHU! 〜パーツを繋げる漢字バトル〜</title>
+<!-- CSSの紐づけ：BUSHU.cssに変更 -->
+<link rel="stylesheet" href="BUSHU.css">
+</head>
+<body>
+
+<div id="game-container">
+
+  <!-- BŪSHU! 大カットイン & 名前表示コンテナ -->
+  <div class="bushu-cutin-container hidden" id="bushu-cutin-container">
+    <div class="bushu-player-tag" id="bushu-player-tag">CPU 1</div>
+    <div class="bushu-big-effect">BŪSHU!</div>
+  </div>
+
+  <!-- ホーム画面 -->
+  <div id="home-screen">
+    <div class="sparkle" style="top:20%; left:15%;"></div>
+    <div class="sparkle" style="top:70%; left:25%;"></div>
+    <div class="sparkle" style="top:15%; left:65%;"></div>
+    <div class="sparkle" style="top:80%; left:85%;"></div>
+
+    <div class="title-area">
+      <div class="neon-logo">BŪSHU!</div>
+      <div class="kana-logo">ブッシュッ！</div>
+      <div class="sub-title">〜パーツを繋げる漢字バトル〜</div>
+    </div>
+
+    <div class="visual-area">
+      <div class="card-group group-left">
+        <div class="parts-stack">
+          <div class="home-card card-purple">
+            <span class="top-tag">氵</span>
+            <span class="center-kanji">氵</span>
+            <span class="bottom-tag">Sanzui</span>
+          </div>
+          <div class="home-card card-blue" style="margin-top:-15px;">
+            <span class="top-tag">青</span>
+            <span class="center-kanji">青</span>
+            <span class="bottom-tag">Aoi</span>
+          </div>
+        </div>
+        <div class="arrow-icon">➔</div>
+        <div class="home-card card-orange">
+          <span class="top-tag">清</span>
+          <span class="center-kanji">清</span>
+          <span class="bottom-tag">Sei</span>
+        </div>
+      </div>
+
+      <div class="card-group group-right">
+        <div class="parts-stack">
+          <div class="home-card card-water">
+            <span class="top-tag">阝</span>
+            <span class="center-kanji">阝</span>
+            <span class="bottom-tag">Kozato</span>
+          </div>
+          <div class="home-card card-blue2" style="margin-top:-15px;">
+            <span class="top-tag">反</span>
+            <span class="center-kanji">反</span>
+            <span class="bottom-tag">Soru</span>
+          </div>
+        </div>
+        <div class="arrow-icon">➔</div>
+        <div class="home-card card-clear">
+          <span class="top-tag">阪</span>
+          <span class="center-kanji">阪</span>
+          <span class="bottom-tag">Saka</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-area">
+      <button class="btn-game-start" onclick="startGameFromHome()">GAME START</button>
+      <div class="sub-menu">
+        <div class="icon-btn" onclick="openInfoModal('遊び方')">
+          <span class="icon">❓</span>
+          <span class="label">遊び方</span>
+        </div>
+        <div class="icon-btn" onclick="openInfoModal('図鑑')">
+          <span class="icon">📖</span>
+          <span class="label">図鑑</span>
+        </div>
+        <div class="icon-btn" onclick="openInfoModal('設定')">
+          <span class="icon">⚙️</span>
+          <span class="label">設定</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 対戦メイン画面 -->
+  <div class="top-section">
+    <div class="timer-neon-box">
+      <span class="clock-icon">🕒</span>
+      <div class="timer-info">
+        <span class="timer-label">のこり時間</span>
+        <span class="timer-value" id="timer-value-num">240</span>
+      </div>
+    </div>
+
+    <div class="cpu-container-group">
+      <div class="cpu-profile-box cpu1-theme" id="profile-cpu1">
+        <div class="cpu-badge">
+          <img id="img-cpu1" class="char-avatar-img" alt="CPU1">
+          <span>CPU1</span>
+          <span id="count-cpu1">7枚</span>
+        </div>
+        <div class="cpu-hand-fan" id="fan-cpu1"></div>
+      </div>
+
+      <div class="cpu-profile-box cpu2-theme" id="profile-cpu2">
+        <div class="cpu-badge">
+          <img id="img-cpu2" class="char-avatar-img" alt="CPU2">
+          <span>CPU2</span>
+          <span id="count-cpu2">7枚</span>
+        </div>
+        <div class="cpu-hand-fan" id="fan-cpu2"></div>
+      </div>
+
+      <div class="cpu-profile-box cpu3-theme" id="profile-cpu3">
+        <div class="cpu-badge">
+          <img id="img-cpu3" class="char-avatar-img" alt="CPU3">
+          <span>CPU3</span>
+          <span id="count-cpu3">7枚</span>
+        </div>
+        <div class="cpu-hand-fan" id="fan-cpu3"></div>
+      </div>
+    </div>
+
+    <div class="top-settings-btn" onclick="openInfoModal('設定')">⚙️</div>
+  </div>
+
+  <div class="speech-bubble hidden" id="speech-bubble">
+    💬 CPU 1「BŪSHU! を言い忘れたな！ ペナルティ1枚！」
+  </div>
+
+  <div class="penalty-error-banner hidden" id="penalty-error-banner">
+    ⚠️ 間違えています！ ペナルティとして1枚引きます！
+  </div>
+
+  <div class="special-cutin-banner hidden" id="special-cutin-banner">
+    ✨ 特殊カード発動！
+  </div>
+
+  <div class="middle-section">
+    <div class="neon-message-sign" id="message-sign-box">
+      <span class="line1" id="msg-line1">つなげて</span>
+      <span class="line2" id="msg-line2">漢字を作ろう！</span>
+    </div>
+
+    <div class="center-field-mat">
+      <div class="draw-hit-banner hidden" id="draw-hit-banner">💥 ドロー被弾！</div>
+      <div class="wild-bushu-banner hidden" id="wild-bushu-banner">【指定部首】氵</div>
+      
+      <div class="top-center-card" id="top-card-element">
+        <span class="kanji-main" id="top-kanji-text">清</span>
+      </div>
+    </div>
+
+    <div class="right-control-group">
+      <div class="deck-neon-stack" onclick="drawFromDeckPlayer()">
+        <div class="deck-card-visual">★</div>
+        <div class="deck-label-text">山札 残り<span id="deck-count-num">0</span>枚</div>
+      </div>
+
+      <button class="btn-confirm-neon" id="btn-submit" onclick="submitSelectedCards()">
+        <span>👆</span>
+        <span>カードを確定</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="bottom-section">
+    <div class="player-profile-neon" id="profile-player">
+      <div class="player-avatar-circle">
+        <span class="crown-icon">👑</span>
+        <img id="img-player" class="player-avatar-img" alt="プレイヤー">
+      </div>
+      <div class="player-info-text">
+        <span class="player-name-lbl">プレイヤー</span>
+        <span class="player-cards-lbl" id="count-player">7枚</span>
+      </div>
+    </div>
+
+    <div class="player-hand-fan-container" id="hand-cards-fan"></div>
+
+    <div class="right-bottom-btns">
+      <button class="btn-bushu-neon" id="btn-bushu" onclick="declareBushu()">BŪSHU!</button>
+      <button class="btn-home-sub" onclick="returnToHome()">タイトルへ</button>
+    </div>
+  </div>
+
+  <!-- 情報 Modal -->
+  <div class="modal-overlay hidden" id="info-modal">
+    <div class="modal-content" style="width: 480px;">
+      <h3 class="modal-title" id="info-title">タイトル</h3>
+      <div id="info-body" style="font-size:12px; line-height:1.6; color:#d1d5db; margin: 12px 0; text-align:left;"></div>
+      <button class="btn-confirm-neon" style="margin: 0 auto;" onclick="closeInfoModal()">とじる</button>
+    </div>
+  </div>
+
+  <!-- 結果 Modal -->
+  <div class="modal-overlay hidden" id="result-modal">
+    <div class="modal-content">
+      <h2 class="modal-title" id="result-title">ゲーム終了</h2>
+      <p id="result-desc" style="font-size:13px; color:#9ca3af; margin-bottom:12px;"></p>
+      
+      <h3 style="font-size:14px; color:#f59e0b;">🏆 最終結果（順位一覧）</h3>
+      <table class="result-table">
+        <thead>
+          <tr>
+            <th>順位</th>
+            <th>プレイヤー</th>
+            <th>最終手札枚数</th>
+          </tr>
+        </thead>
+        <tbody id="ranking-tbody"></tbody>
+      </table>
+
+      <h3 style="margin-top:12px; font-size:14px; color:#60a5fa;">【学習振り返り】この一局で完成した漢字（人別記録）</h3>
+      <table class="result-table">
+        <thead>
+          <tr>
+            <th>作成者</th>
+            <th>完成した漢字</th>
+            <th>構成パーツ</th>
+            <th>部首</th>
+          </tr>
+        </thead>
+        <tbody id="result-tbody"></tbody>
+      </table>
+      <div style="display:flex; justify-content:center; gap:10px; margin-top:15px;">
+        <button class="btn-confirm-neon" onclick="restartGame()">もう一度あそぶ</button>
+        <button class="btn-home-sub" style="padding:8px 16px;" onclick="returnToHome()">タイトルへ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ワイルド部首 Modal -->
+  <div class="modal-overlay hidden" id="wild-modal">
+    <div class="modal-content" style="width: 300px;">
+      <h3 class="modal-title">変更する部首を選んでください</h3>
+      <div class="bushu-selector">
+        <div class="bushu-opt" onclick="selectWildBushu('氵')">氵</div>
+        <div class="bushu-opt" onclick="selectWildBushu('扌')">扌</div>
+        <div class="bushu-opt" onclick="selectWildBushu('木')">木</div>
+        <div class="bushu-opt" onclick="selectWildBushu('禾')">禾</div>
+        <div class="bushu-opt" onclick="selectWildBushu('亻')">亻</div>
+        <div class="bushu-opt" onclick="selectWildBushu('言')">言</div>
+        <div class="bushu-opt" onclick="selectWildBushu('宀')">宀</div>
+        <div class="bushu-opt" onclick="selectWildBushu('竹')">竹</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- JSの紐づけ：BUSHU.jsに変更 -->
+<script src="BUSHU.js"></script>
+</body>
+</html>
+
+* {
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: #080711;
+  color: #f3f4f6;
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#game-container {
+  width: 917px;
+  height: 412px;
+  background: radial-gradient(circle at center, #1b1035 0%, #080612 100%);
+  border: 3px solid #3b82f6;
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.5), inset 0 0 15px rgba(147, 51, 234, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px 12px;
+  overflow: hidden;
+  transform-origin: center center;
+}
+
+/* ホーム画面 */
+#home-screen {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(circle at 30% 40%, #1d1b4b 0%, #080914 100%);
+  z-index: 300;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 40px;
+  overflow: hidden;
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 10px #fff, 0 0 20px #f472b6;
+  animation: sparkleAnim 2s infinite ease-in-out alternate;
+}
+@keyframes sparkleAnim {
+  0% { opacity: 0.2; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1.5); }
+}
+
+.title-area { display: flex; flex-direction: column; align-items: flex-start; z-index: 10; }
+.neon-logo {
+  font-size: 52px; font-weight: 900; font-family: 'Arial Rounded MT Bold', sans-serif;
+  color: #38bdf8; text-shadow: 0 0 5px #38bdf8, 0 0 10px #38bdf8, 0 0 20px #ec4899, 0 0 40px #ec4899;
+  letter-spacing: 2px; line-height: 1; margin-bottom: 4px;
+}
+.kana-logo { font-size: 26px; font-weight: 900; color: #fbbf24; text-shadow: 0 0 8px rgba(251, 191, 36, 0.8), 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 1px; margin-bottom: 8px; }
+.sub-title { font-size: 14px; color: #e0e7ff; font-weight: bold; letter-spacing: 1px; }
+
+.visual-area { position: relative; flex-grow: 1; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 10; }
+.card-group { position: absolute; display: flex; align-items: center; }
+.group-left { left: 20px; top: 60px; transform: rotate(-8deg); }
+.group-right { right: 30px; top: 40px; transform: rotate(6deg); }
+.parts-stack { display: flex; flex-direction: column; gap: 4px; }
+.arrow-icon { font-size: 22px; color: #fbbf24; margin: 0 6px; text-shadow: 0 0 8px rgba(251, 191, 36, 0.8); font-weight: bold; }
+
+.home-card {
+  width: 62px; height: 86px; border-radius: 8px; display: flex; flex-direction: column;
+  justify-content: space-between; padding: 4px; box-shadow: 0 0 12px rgba(0,0,0,0.6); font-weight: bold; color: #111827; position: relative;
+}
+.home-card .top-tag { font-size: 9px; background: rgba(255,255,255,0.6); padding: 1px 3px; border-radius: 3px; align-self: flex-start; }
+.home-card .center-kanji { font-size: 32px; text-align: center; font-weight: 900; font-family: 'Kozuka Mincho Pro', 'Yu Mincho', serif; margin-top: -2px; }
+.home-card .bottom-tag { font-size: 8px; text-align: center; color: #374151; }
+
+.card-purple { background: #f0abfc; border: 2px solid #c084fc; box-shadow: 0 0 12px #c084fc; }
+.card-blue   { background: #38bdf8; border: 2px solid #0284c7; box-shadow: 0 0 12px #38bdf8; }
+.card-orange { background: #fde047; border: 2px solid #eab308; box-shadow: 0 0 12px #fde047; }
+.card-water  { background: #a5f3fc; border: 2px solid #06b6d4; box-shadow: 0 0 12px #06b6d4; }
+.card-blue2  { background: #60a5fa; border: 2px solid #2563eb; box-shadow: 0 0 12px #60a5fa; }
+.card-clear  { background: #a5f3fc; border: 2px solid #06b6d4; box-shadow: 0 0 12px #06b6d4; }
+
+.action-area { position: absolute; right: 35px; bottom: 25px; display: flex; flex-direction: column; align-items: flex-end; gap: 15px; z-index: 20; }
+.btn-game-start {
+  background: linear-gradient(90deg, #ec4899 0%, #38bdf8 100%); color: white; font-size: 20px; font-weight: 900;
+  padding: 10px 32px; border-radius: 30px; border: 2px solid #ffffff; cursor: pointer;
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.6), 0 0 10px rgba(56, 189, 248, 0.6); letter-spacing: 1px; transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-game-start:hover { transform: scale(1.06); box-shadow: 0 0 30px rgba(236, 72, 153, 0.9), 0 0 15px rgba(56, 189, 248, 0.9); }
+
+.sub-menu { display: flex; gap: 12px; }
+.icon-btn {
+  background: rgba(30, 41, 59, 0.8); border: 2px solid #38bdf8; border-radius: 10px; width: 44px; height: 44px;
+  display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; cursor: pointer;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.4); transition: all 0.2s ease;
+}
+.icon-btn:hover { background: #38bdf8; color: #0f1123; transform: translateY(-2px); }
+.icon-btn .icon { font-size: 16px; }
+.icon-btn .label { font-size: 9px; font-weight: bold; margin-top: 1px; }
+
+/* 対戦UI */
+.top-section { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; z-index: 20; }
+.timer-neon-box {
+  background: rgba(15, 23, 42, 0.8); border: 2px solid #00f0ff; box-shadow: 0 0 10px #00f0ff, inset 0 0 10px rgba(0,240,255,0.5);
+  border-radius: 20px; padding: 4px 14px; display: flex; align-items: center; gap: 8px;
+}
+.timer-neon-box .clock-icon { font-size: 18px; color: #00f0ff; text-shadow: 0 0 8px #00f0ff; }
+.timer-neon-box .timer-info { display: flex; flex-direction: column; align-items: flex-start; }
+.timer-neon-box .timer-label { font-size: 9px; color: #a5f3fc; font-weight: bold; }
+.timer-neon-box .timer-value { font-size: 20px; font-weight: 900; color: #ffffff; text-shadow: 0 0 10px #00f0ff; line-height: 1; }
+
+.cpu-container-group { display: flex; gap: 20px; align-items: flex-start; }
+.cpu-profile-box { display: flex; flex-direction: column; align-items: center; position: relative; }
+.cpu-badge {
+  display: flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 14px;
+  font-size: 10px; font-weight: bold; color: #fff; border: 2px solid #fff; box-shadow: 0 0 8px rgba(255,255,255,0.6); z-index: 2;
+}
+
+.char-avatar-img {
+  width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid #ffffff;
+  box-shadow: 0 0 6px rgba(255,255,255,0.8); background: #fff; transition: transform 0.2s ease;
+}
+.player-avatar-img {
+  width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #ffffff;
+  box-shadow: 0 0 8px #00f0ff; background: #fff; transition: transform 0.2s ease;
+}
+
+.cpu1-theme .cpu-badge { background: #ef4444; border-color: #fca5a5; box-shadow: 0 0 10px #ef4444; }
+.cpu2-theme .cpu-badge { background: #3b82f6; border-color: #93c5fd; box-shadow: 0 0 10px #3b82f6; }
+.cpu3-theme .cpu-badge { background: #10b981; border-color: #6ee7b7; box-shadow: 0 0 10px #10b981; }
+
+.cpu-profile-box.active .cpu-badge { transform: scale(1.15); animation: activeGlow 1s infinite alternate; }
+@keyframes activeGlow {
+  0% { box-shadow: 0 0 10px #fbbf24; }
+  100% { box-shadow: 0 0 20px #fbbf24, 0 0 30px #f59e0b; }
+}
+
+.cpu-hand-fan { display: flex; margin-top: 2px; }
+.cpu-card-mini {
+  width: 14px; height: 20px; background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  border: 1px solid #60a5fa; border-radius: 3px; margin-left: -7px; box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.cpu-card-mini:first-child { margin-left: 0; }
+
+.top-settings-btn {
+  width: 32px; height: 32px; border-radius: 50%; background: rgba(15, 23, 42, 0.8);
+  border: 2px solid #00f0ff; box-shadow: 0 0 10px #00f0ff; color: #00f0ff; display: flex;
+  justify-content: center; align-items: center; font-size: 16px; cursor: pointer;
+}
+
+.middle-section { display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative; flex-grow: 1; margin: 4px 0; }
+
+.neon-message-sign {
+  background: rgba(15, 23, 42, 0.85); border: 2px solid #00f0ff;
+  box-shadow: 0 0 12px #00f0ff, inset 0 0 8px rgba(0,240,255,0.4); border-radius: 12px;
+  padding: 8px 12px; transform: rotate(-5deg); display: flex; flex-direction: column; gap: 2px; max-width: 130px;
+}
+.neon-message-sign .line1 { font-size: 11px; color: #a5f3fc; font-weight: bold; }
+.neon-message-sign .line2 { font-size: 13px; color: #fde047; font-weight: 900; text-shadow: 0 0 6px #fde047; }
+
+.center-field-mat {
+  width: 480px; height: 180px; border: 3px solid #d946ef;
+  box-shadow: 0 0 20px #d946ef, inset 0 0 20px rgba(217, 70, 239, 0.3); border-radius: 30px;
+  background: radial-gradient(circle at center, rgba(30, 27, 75, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+  display: flex; justify-content: center; align-items: center; position: relative;
+}
+
+.top-center-card {
+  width: 86px; height: 120px; border: 3px solid #ffffff; border-radius: 12px;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.top-center-card.combine-bump {
+  animation: combineBump 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes combineBump {
+  0% { transform: scale(0.6) rotate(-10deg); filter: brightness(2); }
+  50% { transform: scale(1.25) rotate(5deg); filter: brightness(1.5); }
+  100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+}
+
+.top-center-card .kanji-main { font-size: 48px; font-weight: 900; color: #111827; font-family: 'Kozuka Mincho Pro', 'Yu Mincho', serif; }
+
+.right-control-group { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+
+.deck-neon-stack { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+.deck-card-visual {
+  width: 60px; height: 75px; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  border: 2px solid #00f0ff; box-shadow: 0 0 12px #00f0ff; border-radius: 8px;
+  display: flex; justify-content: center; align-items: center; color: #00f0ff; font-size: 20px; font-weight: bold;
+}
+.deck-label-text { font-size: 11px; font-weight: bold; color: #ffffff; margin-top: 4px; text-shadow: 0 0 6px #00f0ff; }
+
+.btn-confirm-neon {
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%); border: 2px solid #ffffff;
+  box-shadow: 0 0 15px #38bdf8; color: #ffffff; padding: 8px 18px; border-radius: 20px;
+  font-size: 13px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;
+}
+
+.bottom-section { display: flex; justify-content: space-between; align-items: flex-end; width: 100%; z-index: 20; }
+
+.player-profile-neon {
+  display: flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.85);
+  border: 2px solid #00f0ff; box-shadow: 0 0 12px #00f0ff; padding: 4px 12px; border-radius: 20px; position: relative;
+}
+.player-profile-neon.active { border-color: #f59e0b; box-shadow: 0 0 20px #f59e0b; }
+.player-avatar-circle {
+  width: 38px; height: 38px; position: relative; display: flex; justify-content: center; align-items: center;
+}
+.crown-icon { position: absolute; top: -10px; left: -6px; font-size: 14px; z-index: 5; }
+.player-info-text { display: flex; flex-direction: column; }
+.player-name-lbl { font-size: 11px; font-weight: bold; color: #a5f3fc; }
+.player-cards-lbl { font-size: 12px; font-weight: 900; color: #ffffff; }
+
+.player-hand-fan-container {
+  display: flex; justify-content: center; align-items: flex-end; position: relative;
+  height: 105px; flex-grow: 1; margin: 0 20px;
+}
+
+.neon-card {
+  width: 62px; height: 94px; border-radius: 8px; border: 2px solid #ffffff;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  font-size: 36px; font-weight: 900; font-family: 'Kozuka Mincho Pro', 'Yu Mincho', serif;
+  color: #111827; cursor: pointer; margin-left: -16px; box-shadow: 0 0 10px rgba(0,0,0,0.6);
+  transition: transform 0.2s ease, box-shadow 0.2s ease; position: relative; overflow: hidden;
+}
+.neon-card:first-child { margin-left: 0; }
+.neon-card.selected {
+  transform: translateY(-22px) scale(1.1) !important; border-color: #ffffff !important;
+  box-shadow: 0 0 20px #ef4444 !important; z-index: 100 !important;
+}
+
+/* 特殊カード専用スタイル */
+.color-special {
+  background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 50%, #831843 100%);
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 0 15px #f59e0b, inset 0 0 10px #f59e0b !important;
+  color: #fde047 !important;
+  text-shadow: 0 0 8px #f59e0b;
+}
+.special-tag-badge {
+  position: absolute; top: 3px; left: 3px;
+  font-size: 8px; font-weight: 900; color: #ffffff;
+  background: #dc2626; padding: 1px 4px; border-radius: 4px;
+  letter-spacing: 0.5px; box-shadow: 0 0 5px #dc2626;
+}
+.special-star-bg {
+  position: absolute; font-size: 42px; opacity: 0.15; color: #fbbf24;
+  pointer-events: none; z-index: 0;
+}
+
+.color-sanzui { background: #a5f3fc; box-shadow: 0 0 12px #06b6d4; }
+.color-tehen  { background: #fca5a5; box-shadow: 0 0 12px #ef4444; }
+.color-ki     { background: #86efac; box-shadow: 0 0 12px #22c55e; }
+.color-nogi   { background: #fef08a; box-shadow: 0 0 12px #eab308; }
+.color-ninben { background: #d8b4fe; box-shadow: 0 0 12px #a855f7; }
+.color-gon    { background: #93c5fd; box-shadow: 0 0 12px #3b82f6; }
+.color-u      { background: #fde047; box-shadow: 0 0 12px #f59e0b; }
+.color-take   { background: #6ee7b7; box-shadow: 0 0 12px #10b981; }
+
+.right-bottom-btns { display: flex; flex-direction: column; gap: 6px; }
+.btn-bushu-neon {
+  background: #ef4444; color: white; font-size: 13px; font-weight: 900; padding: 8px 16px;
+  border-radius: 20px; border: 2px solid #fff; box-shadow: 0 0 12px #ef4444; cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-bushu-neon.active-glow { animation: pulseGlow 0.8s infinite alternate; }
+.btn-bushu-neon.declared {
+  background: #4b5563 !important;
+  border-color: #9ca3af !important;
+  box-shadow: none !important;
+  color: #9ca3af !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+}
+.btn-bushu-neon.cpu-pressing {
+  transform: scale(1.25) !important;
+  background: #f59e0b !important;
+  box-shadow: 0 0 30px #f59e0b, 0 0 50px #ef4444 !important;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(1); box-shadow: 0 0 10px #ef4444; }
+  100% { transform: scale(1.15); box-shadow: 0 0 25px #ef4444, 0 0 35px #f59e0b; }
+}
+
+.btn-home-sub {
+  background: #374151; color: #d1d5db; font-size: 10px; padding: 4px 10px;
+  border-radius: 12px; border: 1px solid #4b5563; cursor: pointer;
+}
+
+.speech-bubble {
+  position: absolute; top: 50px; left: 50%; transform: translateX(-50%);
+  background: #ef4444; color: #ffffff; font-weight: bold; font-size: 13px; padding: 6px 16px;
+  border-radius: 20px; box-shadow: 0 0 15px rgba(239, 68, 68, 0.8); z-index: 150; animation: popIn 0.3s ease-out;
+}
+
+.penalty-error-banner {
+  position: absolute; top: 25px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%);
+  color: #ffffff; font-size: 15px; font-weight: 900; padding: 8px 24px; border-radius: 30px;
+  border: 2px solid #ffffff; box-shadow: 0 0 25px rgba(239, 68, 68, 0.9); white-space: nowrap; z-index: 170;
+  animation: cutinAnim 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.special-cutin-banner {
+  position: absolute; top: 25px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 50%, #38bdf8 100%);
+  color: #ffffff; font-size: 16px; font-weight: 900; padding: 8px 24px; border-radius: 30px;
+  border: 2px solid #ffffff; box-shadow: 0 0 25px rgba(236, 72, 153, 0.9); white-space: nowrap; z-index: 160;
+  animation: cutinAnim 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.bushu-cutin-container {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 250;
+  pointer-events: none;
+  animation: bushuZoomAnim 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.bushu-player-tag {
+  background: linear-gradient(90deg, #38bdf8 0%, #ec4899 100%);
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 900;
+  padding: 4px 20px;
+  border-radius: 20px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 15px rgba(255,255,255,0.8), 0 0 20px #38bdf8;
+  margin-bottom: -10px;
+  white-space: nowrap;
+}
+
+.bushu-big-effect {
+  font-size: 72px;
+  font-weight: 900;
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  color: #fbbf24;
+  text-shadow: 0 0 10px #fbbf24, 0 0 20px #ef4444, 0 0 40px #ef4444, 0 0 60px #ec4899;
+  letter-spacing: 4px;
+  white-space: nowrap;
+}
+
+@keyframes bushuZoomAnim {
+  0% { transform: translate(-50%, -50%) scale(0.1) rotate(-15deg); opacity: 0; }
+  50% { transform: translate(-50%, -50%) scale(1.3) rotate(5deg); opacity: 1; }
+  75% { transform: translate(-50%, -50%) scale(1.0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.5) rotate(0deg); opacity: 0; }
+}
+
+@keyframes cutinAnim {
+  0% { transform: translateX(-50%) scale(0.2); opacity: 0; }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+.draw-hit-banner {
+  position: absolute; top: 30px; left: 50%; transform: translateX(-50%);
+  background: #ef4444; color: #ffffff; font-size: 14px; font-weight: 900; padding: 6px 18px;
+  border-radius: 20px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.9); white-space: nowrap; z-index: 120; animation: popIn 0.3s ease-out;
+}
+.wild-bushu-banner {
+  position: absolute; top: 10px; background: #f59e0b; color: #111827;
+  font-size: 13px; font-weight: bold; padding: 3px 12px; border-radius: 12px; box-shadow: 0 0 10px rgba(245, 158, 11, 0.8); z-index: 100;
+}
+@keyframes popIn {
+  0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+.modal-overlay {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85);
+  display: flex; justify-content: center; align-items: center; z-index: 200;
+}
+.modal-content {
+  background: #1f2937; border: 2px solid #3b82f6; box-shadow: 0 0 20px #3b82f6; border-radius: 12px;
+  padding: 20px; width: 85%; max-height: 85%; overflow-y: auto; color: #f3f4f6; text-align: center;
+}
+.modal-title { font-size: 20px; margin-bottom: 8px; color: #f59e0b; }
+.result-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.result-table th, .result-table td { border: 1px solid #4b5563; padding: 6px; font-size: 12px; }
+.result-table th { background: #374151; }
+
+.zukan-tab-group { display: flex; justify-content: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+.zukan-tab-btn {
+  background: #374151; color: #9ca3af; border: 1px solid #4b5563; padding: 4px 10px;
+  border-radius: 12px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s ease;
+}
+.zukan-tab-btn.active {
+  background: #38bdf8; color: #0f1123; border-color: #38bdf8; box-shadow: 0 0 8px #38bdf8;
+}
+
+/* 設定モーダル用スタイル */
+.settings-group { display: flex; flex-direction: column; gap: 12px; text-align: left; margin: 15px 0; }
+.setting-row { display: flex; justify-content: space-between; align-items: center; background: #374151; padding: 10px 14px; border-radius: 8px; }
+.setting-label { font-size: 13px; font-weight: bold; color: #a5f3fc; }
+.setting-select { background: #1f2937; color: #ffffff; border: 1px solid #38bdf8; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; outline: none; }
+
+/* 漢字図鑑カードグリッド */
+.zukan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; margin-top: 10px; max-height: 200px; overflow-y: auto; padding: 4px; }
+.zukan-card-item { background: #374151; border: 1px solid #4b5563; border-radius: 6px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s; }
+.zukan-card-item:hover { transform: scale(1.05); border-color: #38bdf8; }
+.zukan-card-kanji { font-size: 24px; font-weight: bold; color: #fbbf24; font-family: 'Kozuka Mincho Pro', 'Yu Mincho', serif; }
+.zukan-card-sub { font-size: 9px; color: #9ca3af; }
+
+.bushu-selector { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+.bushu-opt { background: #374151; padding: 10px; border-radius: 6px; font-size: 20px; cursor: pointer; border: 1px solid #4b5563; }
+.bushu-opt:hover { background: #4b5563; border-color: #f59e0b; }
+
+.hidden { display: none !important; }
+
+function setupCharacterAvatars() {
+  const avatars = {
+    player: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="%23e0f2fe"/><circle cx="50" cy="40" r="22" fill="%23fdba74"/><path d="M 28,26 Q 50,10 72,26 Q 60,35 50,22 Q 40,35 28,26 Z" fill="%231e293b"/><circle cx="42" cy="38" r="4" fill="%231e293b"/><circle cx="58" cy="38" r="4" fill="%231e293b"/><path d="M 40,50 Q 50,60 60,50" stroke="%23ea580c" stroke-width="3" fill="none"/><path d="M 25,95 Q 50,65 75,95 Z" fill="%231d4ed8"/></svg>',
+    cpu1: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="%23fee2e2"/><circle cx="50" cy="40" r="22" fill="%23fed7aa"/><path d="M 22,28 Q 50,8 78,28 Q 65,36 50,20 Q 35,36 22,28 Z" fill="%23b45309"/><circle cx="42" cy="38" r="4" fill="%23451a03"/><circle cx="58" cy="38" r="4" fill="%23451a03"/><path d="M 40,50 Q 50,62 60,50 Z" fill="%23dc2626"/><path d="M 25,95 Q 50,65 75,95 Z" fill="%23991b1b"/></svg>',
+    cpu2: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="%23e0e7ff"/><circle cx="50" cy="40" r="22" fill="%23ffedd5"/><path d="M 25,25 Q 50,12 75,25 Q 60,32 50,22 Q 40,32 25,25 Z" fill="%230284c7"/><circle cx="42" cy="38" r="4" fill="%230c4a6e"/><circle cx="58" cy="38" r="4" fill="%230c4a6e"/><path d="M 42,50 Q 50,55 58,50" stroke="%230369a1" stroke-width="2.5" fill="none"/><path d="M 25,95 Q 50,65 75,95 Z" fill="%231e3a8a"/></svg>',
+    cpu3: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="%23fce7f3"/><circle cx="50" cy="40" r="22" fill="%23fed7aa"/><circle cx="22" cy="30" r="12" fill="%23881337"/><circle cx="78" cy="30" r="12" fill="%23881337"/><path d="M 28,26 Q 50,15 72,26 Z" fill="%23881337"/><circle cx="42" cy="38" r="4" fill="%23881337"/><circle cx="58" cy="38" r="4" fill="%23881337"/><path d="M 42,52 Q 50,58 58,52" stroke="%23be123c" stroke-width="2.5" fill="none"/><path d="M 25,95 Q 50,68 75,95 Z" fill="%23d97706"/></svg>'
+  };
+
+  document.getElementById('img-player').src = avatars.player;
+  document.getElementById('img-cpu1').src = avatars.cpu1;
+  document.getElementById('img-cpu2').src = avatars.cpu2;
+  document.getElementById('img-cpu3').src = avatars.cpu3;
+}
+
+window.addEventListener('DOMContentLoaded', setupCharacterAvatars);
+
+const BUSHU_COLOR_MAP = {
+  '氵': { cssClass: 'color-sanzui', hex: '#a5f3fc', border: '#06b6d4' },
+  '扌': { cssClass: 'color-tehen',  hex: '#fca5a5', border: '#ef4444' },
+  '木': { cssClass: 'color-ki',     hex: '#86efac', border: '#22c55e' },
+  '禾': { cssClass: 'color-nogi',   hex: '#fef08a', border: '#eab308' },
+  '亻': { cssClass: 'color-ninben', hex: '#d8b4fe', border: '#a855f7' },
+  '言': { cssClass: 'color-gon',    hex: '#93c5fd', border: '#3b82f6' },
+  '宀': { cssClass: 'color-u',      hex: '#fde047', border: '#f59e0b' },
+  '竹': { cssClass: 'color-take',   hex: '#6ee7b7', border: '#10b981' }
+};
+
+const SPECIAL_BADGE_MAP = {
+  'SKIP': '⚡ SKIP',
+  'REVERSE': '🔄 REV',
+  'DRAW2': '💥 +2',
+  'DRAW4': '🔥 +4',
+  'WILD': '🎨 WILD'
+};
+
+function fitGameToScreen() {
+  const container = document.getElementById('game-container');
+  const scale = Math.min(window.innerWidth / 917, window.innerHeight / 412, 1.5) * 0.95;
+  container.style.transform = `scale(${scale})`;
+}
+window.addEventListener('resize', fitGameToScreen);
+
+/* 漢字マスタープール */
+const KANJI_MASTER_POOL = [
+  // 氵（さんずい）
+  { kanji: '湯', parts: ['氵', '昜'], bushu: '氵' },
+  { kanji: '油', parts: ['氵', '由'], bushu: '氵' },
+  { kanji: '注', parts: ['氵', '主'], bushu: '氵' },
+  { kanji: '波', parts: ['氵', '皮'], bushu: '氵' },
+  { kanji: '速', parts: ['辶', '束'], bushu: '辶' },
+  { kanji: '消', parts: ['氵', '肖'], bushu: '氵' },
+  { kanji: '泳', parts: ['氵', '永'], bushu: '氵' },
+  { kanji: '湖', parts: ['氵', '古', '月'], bushu: '氵' },
+  { kanji: '温', parts: ['氵', '日', '皿'], bushu: '氵' },
+  { kanji: '泣', parts: ['氵', '立'], bushu: '氵' },
+  { kanji: '浴', parts: ['氵', '谷'], bushu: '氵' },
+  { kanji: '清', parts: ['氵', '青'], bushu: '氵' },
+  { kanji: '法', parts: ['氵', '去'], bushu: '氵' },
+  { kanji: '沖', parts: ['氵', '中'], bushu: '氵' },
+
+  // 扌（てへん）
+  { kanji: '拾', parts: ['扌', '合'], bushu: '扌' },
+  { kanji: '持', parts: ['扌', '寺'], bushu: '扌' },
+  { kanji: '打', parts: ['扌', '丁'], bushu: '扌' },
+  { kanji: '折', parts: ['扌', '斤'], bushu: '扌' },
+
+  // 木（きへん）
+  { kanji: '柱', parts: ['木', '主'], bushu: '木' },
+  { kanji: '板', parts: ['木', '反'], bushu: '木' },
+  { kanji: '横', parts: ['木', '黄'], bushu: '木' },
+  { kanji: '植', parts: ['木', '直'], bushu: '木' },
+  { kanji: '根', parts: ['木', '艮'], bushu: '木' },
+  { kanji: '標', parts: ['木', '票'], bushu: '木' },
+  { kanji: '材', parts: ['木', '才'], bushu: '木' },
+  { kanji: '梅', parts: ['木', '毎'], bushu: '木' },
+  { kanji: '松', parts: ['木', '公'], bushu: '木' },
+
+  // 亻（にんべん）
+  { kanji: '仕', parts: ['亻', '士'], bushu: '亻' },
+  { kanji: '使', parts: ['亻', '吏'], bushu: '亻' },
+  { kanji: '住', parts: ['亻', '主'], bushu: '亻' },
+  { kanji: '係', parts: ['亻', '系'], bushu: '亻' },
+  { kanji: '倍', parts: ['亻', '咅'], bushu: '亻' },
+  { kanji: '代', parts: ['亻', '弋'], bushu: '亻' },
+  { kanji: '伝', parts: ['亻', '云'], bushu: '亻' },
+  { kanji: '付', parts: ['亻', '寸'], bushu: '亻' },
+  { kanji: '位', parts: ['亻', '立'], bushu: '亻' },
+  { kanji: '働', parts: ['亻', '動'], bushu: '亻' },
+  { kanji: '側', parts: ['亻', '則'], bushu: '亻' },
+  { kanji: '信', parts: ['亻', '言'], bushu: '亻' },
+  { kanji: '佐', parts: ['亻', '左'], bushu: '亻' },
+  { kanji: '借', parts: ['亻', '昔'], bushu: '亻' },
+  { kanji: '便', parts: ['亻', '更'], bushu: '亻' },
+  { kanji: '仲', parts: ['亻', '中'], bushu: '亻' },
+  { kanji: '例', parts: ['亻', '列'], bushu: '亻' },
+
+  // 言（ごんべん）
+  { kanji: '談', parts: ['言', '炎'], bushu: '言' },
+  { kanji: '詩', parts: ['言', '寺'], bushu: '言' },
+  { kanji: '調', parts: ['言', '周'], bushu: '言' },
+  { kanji: '記', parts: ['言', '己'], bushu: '言' },
+  { kanji: '訓', parts: ['言', '川'], bushu: '言' },
+  { kanji: '話', parts: ['言', '舌'], bushu: '言' },
+  { kanji: '課', parts: ['言', '果'], bushu: '言' },
+  { kanji: '議', parts: ['言', '義'], bushu: '言' },
+
+  // 禾（のぎへん）
+  { kanji: '秒', parts: ['禾', '少'], bushu: '禾' },
+  { kanji: '和', parts: ['禾', '口'], bushu: '禾' },
+  { kanji: '秋', parts: ['禾', '火'], bushu: '禾' },
+  { kanji: '科', parts: ['禾', '斗'], bushu: '科' },
+  { kanji: '積', parts: ['禾', '責'], bushu: '禾' },
+  { kanji: '種', parts: ['禾', '重'], bushu: '禾' },
+
+  // 宀（うかんむり）
+  { kanji: '安', parts: ['宀', '女'], bushu: '宀' },
+  { kanji: '宿', parts: ['宀', '百'], bushu: '宀' },
+  { kanji: '客', parts: ['宀', '各'], bushu: '宀' },
+  { kanji: '宮', parts: ['宀', '呂'], bushu: '宀' },
+
+  // 竹（たけかんむり）
+  { kanji: '等', parts: ['竹', '寺'], bushu: '竹' },
+  { kanji: '箱', parts: ['竹', '相'], bushu: '竹' },
+  { kanji: '笛', parts: ['竹', '由'], bushu: '竹' },
+  { kanji: '筆', parts: ['竹', '聿'], bushu: '竹' },
+  { kanji: '管', parts: ['竹', '官'], bushu: '竹' },
+  { kanji: '節', parts: ['竹', '即'], bushu: '節' }
+];
+
+/* 試合ごとに動的に選出される現在のゲームDB */
+let KANJI_DB = [];
+
+const SPECIAL_CARDS = [
+  { kanji: '飛', type: 'SKIP', name: 'スキップ' },
+  { kanji: '逆', type: 'REVERSE', name: 'リバース' },
+  { kanji: '引', type: 'DRAW2', name: 'ドロー2' },
+  { kanji: '倍', type: 'DRAW4', name: 'ドロー4' },
+  { kanji: '変', type: 'WILD', name: 'ワイルド' }
+];
+
+const PLAYER_NAMES = ['あなた', 'CPU 1', 'CPU 2', 'CPU 3'];
+
+let deck = [];
+let players = [[], [], [], []];
+let turn = 0;
+let direction = 1;
+let topCard = null;
+let activeParts = [];
+let wildSpecifiedBushu = null;
+let selectedIndices = [];
+let historyCompletedKanji = [];
+let bushuDeclared = [false, false, false, false];
+let pendingDrawCount = 0;
+let cpuTimerId = null;
+
+let cpuSpeedMs = 2800; // 最短でも2.8秒思考猶予を確保
+let gameTimeLimitSetting = 240;
+let timeRemaining = gameTimeLimitSetting;
+let timerInterval = null;
+let isGameOver = false;
+
+function startGameFromHome() {
+  document.getElementById('home-screen').classList.add('hidden');
+  initGame();
+}
+
+function returnToHome() {
+  if (timerInterval) clearInterval(timerInterval);
+  if (cpuTimerId) clearTimeout(cpuTimerId);
+  isGameOver = true;
+  document.getElementById('result-modal').classList.add('hidden');
+  document.getElementById('home-screen').classList.remove('hidden');
+}
+
+let activeZukanTab = 'ALL';
+
+function openInfoModal(type) {
+  const modal = document.getElementById('info-modal');
+  const title = document.getElementById('info-title');
+  const body = document.getElementById('info-body');
+
+  if (type === '遊び方') {
+    title.innerText = '📖 遊び方ルール & 特殊カード';
+    body.innerHTML = `
+      <div style="max-height:220px; overflow-y:auto; padding-right:4px;">
+        <h4 style="color:#f59e0b; margin-bottom:4px;">基本ルール</h4>
+        1. 手札からパーツを繋げて場にあるカードと共通の部首・パーツを持つ漢字を作成して出します。<br>
+        2. 手札が残り2枚以下になったら<b>「BŪSHU!」ボタン</b>を押して上がり宣言します！<br>
+        3. <b>次の人がカードを確定する前</b>にボタンを押せばペナルティなしで正常に成立します。<br><br>
+        <h4 style="color:#38bdf8; margin-bottom:4px;">✨ 特殊カード効果一覧</h4>
+        <table class="result-table">
+          <tr><th>カード</th><th>効果</th></tr>
+          <tr><td style="color:#f59e0b; font-weight:bold;">⚡ 飛（スキップ）</td><td>次のプレイヤーのターンをスキップします。</td></tr>
+          <tr><td style="color:#f59e0b; font-weight:bold;">🔄 逆（リバース）</td><td>ターンの回り順（時計回り・反時計回り）を逆転します。</td></tr>
+          <tr><td style="color:#f59e0b; font-weight:bold;">💥 引（ドロー2）</td><td>次のプレイヤーに2枚引かせます。（ドロー重ね可能）</td></tr>
+          <tr><td style="color:#f59e0b; font-weight:bold;">🔥 倍（ドロー4）</td><td>次のプレイヤーに4枚引かせます。（強力な攻撃）</td></tr>
+          <tr><td style="color:#f59e0b; font-weight:bold;">🎨 変（ワイルド）</td><td>場の指定部首を自由に変更できます。</td></tr>
+        </table>
+      </div>
+    `;
+  } else if (type === '図鑑') {
+    title.innerText = '📖 漢字図鑑 & プレイ対戦記録';
+    renderZukanModalContent();
+    modal.classList.remove('hidden');
+    return;
+  } else if (type === '設定') {
+    title.innerText = '⚙️ ゲーム設定';
+    body.innerHTML = `
+      <div class="settings-group">
+        <div class="setting-row">
+          <span class="setting-label">🤖 CPU思考速度</span>
+          <select class="setting-select" id="setting-cpu-speed" onchange="applySettings()">
+            <option value="2000" ${cpuSpeedMs === 2000 ? 'selected' : ''}>サクサク (2.0秒)</option>
+            <option value="2800" ${cpuSpeedMs === 2800 ? 'selected' : ''}>ふつう (2.8秒)</option>
+            <option value="4500" ${cpuSpeedMs === 4500 ? 'selected' : ''}>じっくり (4.5秒)</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label">🕒 制限時間</span>
+          <select class="setting-select" id="setting-time-limit" onchange="applySettings()">
+            <option value="120" ${gameTimeLimitSetting === 120 ? 'selected' : ''}>2分</option>
+            <option value="180" ${gameTimeLimitSetting === 180 ? 'selected' : ''}>3分</option>
+            <option value="240" ${gameTimeLimitSetting === 240 ? 'selected' : ''}>4分</option>
+            <option value="300" ${gameTimeLimitSetting === 300 ? 'selected' : ''}>5分</option>
+          </select>
+        </div>
+      </div>
+    `;
+  }
+  modal.classList.remove('hidden');
+}
+
+function applySettings() {
+  const speedVal = document.getElementById('setting-cpu-speed').value;
+  const timeVal = document.getElementById('setting-time-limit').value;
+  cpuSpeedMs = parseInt(speedVal, 10);
+  gameTimeLimitSetting = parseInt(timeVal, 10);
+}
+
+function renderZukanModalContent() {
+  const body = document.getElementById('info-body');
+  
+  let html = `
+    <div class="zukan-tab-group">
+      <button class="zukan-tab-btn ${activeZukanTab === 'ALL' ? 'active' : ''}" onclick="switchZukanTab('ALL')">対戦で作った漢字</button>
+      <button class="zukan-tab-btn ${activeZukanTab === 'MASTER' ? 'active' : ''}" onclick="switchZukanTab('MASTER')">全収録漢字一覧</button>
+    </div>
+  `;
+
+  if (activeZukanTab === 'MASTER') {
+    html += `
+      <div style="margin-bottom:8px;">
+        <input type="text" id="zukan-search-input" placeholder="漢字・部首で検索..." oninput="filterMasterZukan()" style="width:100%; padding:4px 8px; border-radius:6px; border:1px solid #38bdf8; background:#1f2937; color:#fff; font-size:12px;">
+      </div>
+      <div class="zukan-grid" id="zukan-master-grid"></div>
+    `;
+    body.innerHTML = html;
+    filterMasterZukan();
+    return;
+  }
+
+  let filtered = historyCompletedKanji;
+
+  if (filtered.length === 0) {
+    html += `<div style="text-align:center; padding: 20px; color:#9ca3af;">まだ対戦中に作成された漢字の記録はありません。</div>`;
+  } else {
+    html += `
+      <div style="max-height:180px; overflow-y:auto;">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th>作成者</th>
+              <th>完成した漢字</th>
+              <th>構成パーツ</th>
+              <th>部首</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+    filtered.forEach(item => {
+      html += `
+        <tr>
+          <td style="color:#38bdf8; font-weight:bold;">${PLAYER_NAMES[item.playerIdx]}</td>
+          <td style="font-size:16px; font-weight:bold; color:#f59e0b;">${item.kanji}</td>
+          <td>${item.parts}</td>
+          <td>${item.bushu}</td>
+        </tr>
+      `;
+    });
+    html += `</tbody></table></div>`;
+  }
+
+  body.innerHTML = html;
+}
+
+function filterMasterZukan() {
+  const grid = document.getElementById('zukan-master-grid');
+  if (!grid) return;
+  const query = (document.getElementById('zukan-search-input')?.value || '').trim();
+
+  const filtered = KANJI_MASTER_POOL.filter(k => k.kanji.includes(query) || k.bushu.includes(query));
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#9ca3af;">該当する漢字が見つかりません</div>`;
+    return;
+  }
+
+  let html = '';
+  filtered.forEach(k => {
+    html += `
+      <div class="zukan-card-item" onclick="alert('【${k.kanji}】\\n部首: ${k.bushu}\\nパーツ: ${k.parts.join(' + ')}')">
+        <span class="zukan-card-kanji">${k.kanji}</span>
+        <span class="zukan-card-sub">${k.parts.join('+')}</span>
+      </div>
+    `;
+  });
+  grid.innerHTML = html;
+}
+
+function switchZukanTab(tabKey) {
+  activeZukanTab = tabKey;
+  renderZukanModalContent();
+}
+
+function closeInfoModal() {
+  document.getElementById('info-modal').classList.add('hidden');
+}
+
+function buildBalancedKanjiDB() {
+  const targetBushus = ['氵', '扌', '木', '亻', '言', '禾', '宀', '竹'];
+  let selected = [];
+
+  targetBushus.forEach(b => {
+    const list = KANJI_MASTER_POOL.filter(k => k.bushu === b);
+    const shuffled = [...list].sort(() => 0.5 - Math.random());
+    selected.push(...shuffled.slice(0, 5));
+  });
+
+  return selected;
+}
+
+function generateOptimizedDeck() {
+  let cardPool = [];
+  KANJI_DB.forEach(k => {
+    k.parts.forEach(p => {
+      cardPool.push({ type: 'PART', value: p, bushu: k.bushu });
+    });
+  });
+  
+  SPECIAL_CARDS.forEach(s => {
+    cardPool.push({ type: 'SPECIAL', value: s.kanji, effect: s.type });
+    cardPool.push({ type: 'SPECIAL', value: s.kanji, effect: s.type });
+  });
+
+  for (let i = cardPool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cardPool[i], cardPool[j]] = [cardPool[j], cardPool[i]];
+  }
+  return cardPool;
+}
+
+function initGame() {
+  if (timerInterval) clearInterval(timerInterval);
+  if (cpuTimerId) clearTimeout(cpuTimerId);
+  
+  KANJI_DB = buildBalancedKanjiDB();
+
+  deck = generateOptimizedDeck(); players = [[], [], [], []]; turn = 0; direction = 1;
+  selectedIndices = []; historyCompletedKanji = [];
+  bushuDeclared = [false, false, false, false]; pendingDrawCount = 0;
+  wildSpecifiedBushu = null; timeRemaining = gameTimeLimitSetting; isGameOver = false;
+
+  const randomKanji = KANJI_DB[Math.floor(Math.random() * KANJI_DB.length)];
+  topCard = { type: 'PART', value: randomKanji.kanji, bushu: randomKanji.bushu };
+  updateActivePartsFromCard(topCard);
+
+  for (let p = 0; p < 4; p++) {
+    const sampleKanji = KANJI_DB.find(k => k.parts.some(pt => activeParts.includes(pt)) || k.bushu === topCard.bushu) || randomKanji;
+    if (sampleKanji) {
+      sampleKanji.parts.forEach(partVal => {
+        players[p].push({ type: 'PART', value: partVal, bushu: sampleKanji.bushu });
+      });
+    }
+    while (players[p].length < 7) {
+      if (deck.length > 0) players[p].push(deck.pop());
+    }
+  }
+
+  fitGameToScreen();
+  renderUI();
+  updateTurnDisplay();
+  startTimer();
+}
+
+function updateActivePartsFromCard(card) {
+  if (card.type === 'SPECIAL') { activeParts = []; return; }
+  wildSpecifiedBushu = null;
+  const matched = KANJI_DB.find(k => k.kanji === card.value);
+  if (matched) { activeParts = [...matched.parts]; } else { activeParts = [card.value]; }
+}
+
+function startTimer() {
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    if (isGameOver) return;
+    timeRemaining--; updateTimerDisplay();
+    if (timeRemaining <= 0) { clearInterval(timerInterval); handleTimeUp(); }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  document.getElementById('timer-value-num').innerText = timeRemaining;
+}
+
+function handleTimeUp() {
+  isGameOver = true;
+  const rankingList = players.map((p, idx) => ({ playerIdx: idx, count: p.length }));
+  rankingList.sort((a, b) => a.count - b.count);
+  showResultModal(rankingList, true);
+}
+
+function renderUI() {
+  document.getElementById('deck-count-num').innerText = deck.length;
+  
+  for (let p = 0; p < 4; p++) {
+    if (players[p].length > 2) {
+      bushuDeclared[p] = false;
+    }
+  }
+
+  const wildBanner = document.getElementById('wild-bushu-banner');
+  if (wildSpecifiedBushu) {
+    wildBanner.innerText = `【指定部首】 ${wildSpecifiedBushu}`;
+    wildBanner.classList.remove('hidden');
+  } else {
+    wildBanner.classList.add('hidden');
+  }
+
+  [1, 2, 3].forEach(idx => {
+    const count = players[idx].length;
+    document.getElementById(`count-cpu${idx}`).innerText = `${count}枚`;
+    const fanEl = document.getElementById(`fan-cpu${idx}`);
+    fanEl.innerHTML = '';
+    for (let c = 0; c < count; c++) {
+      const cardMini = document.createElement('div');
+      cardMini.className = 'cpu-card-mini';
+      fanEl.appendChild(cardMini);
+    }
+  });
+
+  document.getElementById('count-player').innerText = `${players[0].length}枚`;
+
+  const topCardEl = document.getElementById('top-card-element');
+  document.getElementById('top-kanji-text').innerText = topCard.value;
+  
+  const bushuKey = wildSpecifiedBushu || topCard.bushu;
+  const colorInfo = BUSHU_COLOR_MAP[bushuKey];
+  if (colorInfo) {
+    topCardEl.style.background = `linear-gradient(135deg, #ffffff 0%, ${colorInfo.hex} 100%)`;
+    topCardEl.style.boxShadow = `0 0 25px ${colorInfo.border}`;
+  } else {
+    topCardEl.style.background = 'linear-gradient(135deg, #fef08a 0%, #eab308 100%)';
+    topCardEl.style.boxShadow = '0 0 25px #fde047';
+  }
+
+  const msgL1 = document.getElementById('msg-line1');
+  const msgL2 = document.getElementById('msg-line2');
+  
+  const selectedCards = selectedIndices.map(i => players[0][i]);
+  const hasSpecialSelected = selectedCards.some(c => c.type === 'SPECIAL');
+
+  if (hasSpecialSelected) {
+    msgL1.innerText = '特殊効果発動！';
+    msgL2.innerText = '※単体出し専用';
+    msgL2.style.color = '#ef4444';
+  } else {
+    msgL1.innerText = 'つなげて';
+    msgL2.innerText = '漢字を作ろう！';
+    msgL2.style.color = '#fde047';
+  }
+
+  const handContainer = document.getElementById('hand-cards-fan');
+  handContainer.innerHTML = '';
+  const handCount = players[0].length;
+  players[0].forEach((card, idx) => {
+    const isSelected = selectedIndices.includes(idx);
+    const cardEl = document.createElement('div');
+    
+    let colorClass = 'color-ki';
+    if (card.type === 'SPECIAL') {
+      colorClass = 'color-special';
+    } else {
+      const bInfo = BUSHU_COLOR_MAP[card.bushu];
+      if (bInfo) colorClass = bInfo.cssClass;
+    }
+
+    cardEl.className = `neon-card ${colorClass} ${isSelected ? 'selected' : ''}`;
+    
+    const rotate = (idx - (handCount - 1) / 2) * 3.5;
+    cardEl.style.transform = `rotate(${rotate}deg)`;
+    cardEl.style.zIndex = idx;
+
+    if (card.type === 'SPECIAL') {
+      const badgeText = SPECIAL_BADGE_MAP[card.effect] || '★ SPECIAL';
+      cardEl.innerHTML = `
+        <span class="special-tag-badge">${badgeText}</span>
+        <span class="special-star-bg">★</span>
+        <span style="position:relative; z-index:2;">${card.value}</span>
+      `;
+    } else {
+      cardEl.innerText = card.value;
+    }
+
+    cardEl.onclick = () => toggleCardSelect(idx);
+    handContainer.appendChild(cardEl);
+  });
+
+  const btnBushu = document.getElementById('btn-bushu');
+  if (bushuDeclared[0]) {
+    btnBushu.innerText = 'BŪSHU! 宣言済み';
+    btnBushu.className = 'btn-bushu-neon declared';
+    btnBushu.onclick = null;
+  } else {
+    btnBushu.innerText = 'BŪSHU!';
+    btnBushu.className = players[0].length <= 2 ? 'btn-bushu-neon active-glow' : 'btn-bushu-neon';
+    btnBushu.onclick = declareBushu;
+  }
+}
+
+function toggleCardSelect(index) {
+  if (turn !== 0 || isGameOver) return;
+  const clickedCard = players[0][index];
+
+  if (clickedCard.type === 'SPECIAL') {
+    if (selectedIndices.includes(index)) {
+      selectedIndices = [];
+    } else {
+      selectedIndices = [index];
+    }
+  } else {
+    selectedIndices = selectedIndices.filter(i => players[0][i].type !== 'SPECIAL');
+    
+    const pos = selectedIndices.indexOf(index);
+    if (pos > -1) {
+      selectedIndices.splice(pos, 1);
+    } else {
+      selectedIndices.push(index);
+    }
+  }
+  renderUI();
+}
+
+function findMatchingKanji(partValues) {
+  if (partValues.length < 2) return null;
+  const sortedInput = [...partValues].sort().join('');
+  return KANJI_DB.find(k => [...k.parts].sort().join('') === sortedInput);
+}
+
+function checkPlayedCardsValid(selectedCards) {
+  if (selectedCards.length === 0) return false;
+
+  if (selectedCards.some(c => c.type === 'SPECIAL') && selectedCards.length > 1) {
+    return false;
+  }
+
+  if (pendingDrawCount > 0) {
+    if (selectedCards.length === 1 && selectedCards[0].type === 'SPECIAL') {
+      const eff = selectedCards[0].effect;
+      if (eff === 'DRAW2' || eff === 'DRAW4') return true;
+    }
+    return false;
+  }
+
+  if (selectedCards.length === 1 && selectedCards[0].type === 'SPECIAL') {
+    return true;
+  }
+
+  const values = selectedCards.map(c => c.value);
+  const matchedKanji = findMatchingKanji(values);
+
+  if (matchedKanji) {
+    const topBushuKey = wildSpecifiedBushu || topCard.bushu;
+    const isSameBushuColor = (matchedKanji.bushu === topBushuKey);
+    const hasCommonPart = (activeParts.length === 0) || matchedKanji.parts.some(p => activeParts.includes(p));
+
+    return isSameBushuColor || hasCommonPart;
+  }
+
+  return false;
+}
+
+function triggerPenaltyWarning() {
+  const banner = document.getElementById('penalty-error-banner');
+  banner.classList.remove('hidden');
+
+  selectedIndices = [];
+  drawCardsSmart(0, 1);
+  renderUI();
+
+  setTimeout(() => {
+    banner.classList.add('hidden');
+    advanceTurn();
+    renderUI();
+    updateTurnDisplay();
+    if (turn !== 0 && !isGameOver) {
+      scheduleCpuTurn();
+    }
+  }, 1800);
+}
+
+function submitSelectedCards() {
+  if (turn !== 0 || isGameOver) return;
+  if (selectedIndices.length === 0) return;
+
+  const selectedCards = selectedIndices.map(i => players[0][i]);
+
+  if (selectedCards.some(c => c.type === 'SPECIAL') && selectedCards.length > 1) {
+    triggerSpecialCutin("⚠️ 特殊カードは他のカードと組み合わせて出せません！");
+    selectedIndices = [];
+    renderUI();
+    return;
+  }
+
+  const isValidCombo = checkPlayedCardsValid(selectedCards);
+
+  if (!isValidCombo) {
+    triggerPenaltyWarning();
+    return;
+  }
+
+  selectedIndices.sort((a,b) => b - a).forEach(i => players[0].splice(i, 1));
+  selectedIndices = [];
+
+  processPlayedCards(selectedCards, 0);
+  checkWinOrNextTurn();
+}
+
+function triggerCombineBumpAnimation() {
+  const topCardEl = document.getElementById('top-card-element');
+  topCardEl.classList.remove('combine-bump');
+  void topCardEl.offsetWidth;
+  topCardEl.classList.add('combine-bump');
+}
+
+function triggerSpecialCutin(text) {
+  const banner = document.getElementById('special-cutin-banner');
+  banner.innerText = text;
+  banner.classList.remove('hidden');
+  setTimeout(() => banner.classList.add('hidden'), 1600);
+}
+
+function triggerBigBushuEffect(playerIdx) {
+  const container = document.getElementById('bushu-cutin-container');
+  const tag = document.getElementById('bushu-player-tag');
+  
+  tag.innerText = PLAYER_NAMES[playerIdx];
+  container.classList.remove('hidden');
+  
+  container.style.animation = 'none';
+  void container.offsetWidth; 
+  container.style.animation = 'bushuZoomAnim 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+
+  setTimeout(() => {
+    container.classList.add('hidden');
+  }, 1200);
+}
+
+function triggerCpuPressBushuButton(cpuIdx) {
+  const btnBushu = document.getElementById('btn-bushu');
+  btnBushu.classList.add('cpu-pressing');
+
+  setTimeout(() => {
+    btnBushu.classList.remove('cpu-pressing');
+    bushuDeclared[cpuIdx] = true;
+    triggerBigBushuEffect(cpuIdx);
+  }, 300);
+}
+
+function declareBushu() {
+  if (isGameOver) return;
+  if (players[0].length <= 2 && !bushuDeclared[0]) {
+    bushuDeclared[0] = true;
+    triggerBigBushuEffect(0);
+    renderUI();
+  }
+}
+
+function processPlayedCards(cards, playerIdx) {
+  if (cards.length === 1 && cards[0].type === 'SPECIAL') {
+    const sp = cards[0]; topCard = sp; activeParts = [];
+    
+    const specNames = { 'SKIP': '⚡ スキップ発動！', 'REVERSE': '🔄 リバース発動！', 'DRAW2': '💥 ドロー2攻撃！', 'DRAW4': '🔥 ドロー4大攻撃！', 'WILD': '🎨 ワイルド発動！' };
+    triggerSpecialCutin(specNames[sp.effect] || '✨ 特殊カード発動！');
+
+    if (sp.effect === 'SKIP') { advanceTurn(); }
+    else if (sp.effect === 'REVERSE') { direction *= -1; }
+    else if (sp.effect === 'DRAW2') { pendingDrawCount += 2; }
+    else if (sp.effect === 'DRAW4') { pendingDrawCount += 4; }
+    else if (sp.effect === 'WILD') {
+      if (playerIdx === 0) {
+        document.getElementById('wild-modal').classList.remove('hidden'); return;
+      } else {
+        const bushuList = ['氵', '扌', '木', '禾', '亻', '言', '宀', '竹'];
+        const selectedB = bushuList[Math.floor(Math.random() * bushuList.length)];
+        activeParts = [selectedB]; wildSpecifiedBushu = selectedB;
+      }
+    }
+  } else {
+    const values = cards.map(c => c.value);
+    const matched = findMatchingKanji(values);
+    if (matched) {
+      topCard = { type: 'PART', value: matched.kanji, bushu: matched.bushu };
+      activeParts = [...matched.parts]; wildSpecifiedBushu = null;
+      historyCompletedKanji.push({ playerIdx: playerIdx, kanji: matched.kanji, parts: matched.parts.join(' + '), bushu: matched.bushu });
+      triggerCombineBumpAnimation();
+    }
+  }
+}
+
+function selectWildBushu(bushu) {
+  activeParts = [bushu]; wildSpecifiedBushu = bushu;
+  document.getElementById('wild-modal').classList.add('hidden');
+  checkWinOrNextTurn();
+}
+
+function triggerCpuNotice(speakerIdx, msg, callback) {
+  const bubble = document.getElementById('speech-bubble');
+  bubble.innerText = `💬 ${PLAYER_NAMES[speakerIdx]}「${msg}」`;
+  bubble.classList.remove('hidden');
+  setTimeout(() => { bubble.classList.add('hidden'); if (callback) callback(); }, 2200);
+}
+
+function triggerDrawHitBanner(playerIdx, drawAmount, callback) {
+  const banner = document.getElementById('draw-hit-banner');
+  banner.innerText = `💥 ${PLAYER_NAMES[playerIdx]} が ${drawAmount}枚 ドロー被弾！`;
+  banner.classList.remove('hidden');
+  setTimeout(() => { banner.classList.add('hidden'); if (callback) callback(); }, 1800);
+}
+
+function checkWinOrNextTurn() {
+  if (isGameOver) return;
+  if (players[turn].length === 0) {
+    isGameOver = true; if (timerInterval) clearInterval(timerInterval);
+    const winnerIdx = turn; const others = [];
+    for (let i = 0; i < 4; i++) { if (i !== winnerIdx) others.push({ playerIdx: i, count: players[i].length }); }
+    others.sort((a, b) => a.count - b.count);
+    showResultModal([{ playerIdx: winnerIdx, count: 0 }, ...others], false);
+    return;
+  }
+
+  advanceTurn(); renderUI(); updateTurnDisplay();
+  
+  if (turn === 0 && pendingDrawCount > 0) {
+    checkAndAutoProcessPlayerDraw();
+    return;
+  }
+
+  if (turn !== 0 && !isGameOver) {
+    scheduleCpuTurn();
+  }
+}
+
+function scheduleCpuTurn() {
+  if (cpuTimerId) clearTimeout(cpuTimerId);
+  cpuTimerId = setTimeout(executeCpuTurn, cpuSpeedMs);
+}
+
+function advanceTurn() { turn = (turn + direction + 4) % 4; }
+
+function drawCardsSmart(playerIdx, count) {
+  const hand = players[playerIdx];
+
+  for (let c = 0; c < count; c++) {
+    if (deck.length === 0) break;
+
+    let targetCardIndex = -1;
+
+    for (let i = 0; i < deck.length; i++) {
+      const candidate = deck[i];
+      if (candidate.type === 'SPECIAL') { 
+        targetCardIndex = i; 
+        break; 
+      }
+
+      const canFormPairWithHand = hand.some(hCard => {
+        if (hCard.type === 'SPECIAL') return false;
+        return !!findMatchingKanji([hCard.value, candidate.value]);
+      });
+
+      if (canFormPairWithHand) {
+        targetCardIndex = i;
+        break;
+      }
+    }
+
+    if (targetCardIndex > -1) {
+      const drawnCard = deck.splice(targetCardIndex, 1)[0];
+      hand.push(drawnCard);
+    } else {
+      hand.push(deck.pop());
+    }
+  }
+}
+
+function checkAndAutoProcessPlayerDraw() {
+  if (turn !== 0 || pendingDrawCount === 0 || isGameOver) return;
+
+  const hasCounterCard = players[0].some(c => c.type === 'SPECIAL' && (c.effect === 'DRAW2' || c.effect === 'DRAW4'));
+
+  if (!hasCounterCard) {
+    setTimeout(() => {
+      const hitAmount = pendingDrawCount;
+      drawCardsSmart(0, pendingDrawCount);
+      pendingDrawCount = 0;
+      triggerDrawHitBanner(0, hitAmount, () => {
+        advanceTurn();
+        renderUI();
+        updateTurnDisplay();
+        if (turn !== 0 && !isGameOver) scheduleCpuTurn();
+      });
+    }, 500);
+  }
+}
+
+function drawFromDeckPlayer() {
+  if (turn !== 0 || isGameOver) return;
+  
+  if (pendingDrawCount > 0) {
+    const hitAmount = pendingDrawCount;
+    drawCardsSmart(0, pendingDrawCount); 
+    pendingDrawCount = 0;
+    triggerDrawHitBanner(0, hitAmount, () => {
+      advanceTurn(); 
+      renderUI(); 
+      updateTurnDisplay();
+      if (turn !== 0 && !isGameOver) scheduleCpuTurn();
+    });
+    return;
+  } 
+
+  drawCardsSmart(0, 1);
+  selectedIndices = [];
+  renderUI();
+  
+  const canPlay = checkPlayerHasAnyValidCombo();
+  
+  if (canPlay) {
+    return;
+  } else {
+    advanceTurn(); 
+    renderUI(); 
+    updateTurnDisplay();
+    if (turn !== 0 && !isGameOver) {
+      scheduleCpuTurn();
+    }
+  }
+}
+
+function checkPlayerHasAnyValidCombo() {
+  const hand = players[0];
+  if (hand.some(c => c.type === 'SPECIAL')) return true;
+
+  const topBushuKey = wildSpecifiedBushu || topCard.bushu;
+
+  for (let i = 0; i < hand.length; i++) {
+    for (let j = i + 1; j < hand.length; j++) {
+      const matched = findMatchingKanji([hand[i].value, hand[j].value]);
+      if (matched) {
+        const hasCommon = activeParts.length === 0 || matched.parts.some(p => activeParts.includes(p));
+        const isSameBushu = (matched.bushu === topBushuKey);
+        if (hasCommon || isSameBushu) return true;
+      }
+    }
+  }
+
+  for (let i = 0; i < hand.length; i++) {
+    for (let j = i + 1; j < hand.length; j++) {
+      for (let k = j + 1; k < hand.length; k++) {
+        const matched = findMatchingKanji([hand[i].value, hand[j].value, hand[k].value]);
+        if (matched) {
+          const hasCommon = activeParts.length === 0 || matched.parts.some(p => activeParts.includes(p));
+          const isSameBushu = (matched.bushu === topBushuKey);
+          if (hasCommon || isSameBushu) return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+function updateTurnDisplay() {
+  document.getElementById('profile-player').classList.toggle('active', turn === 0);
+  document.getElementById('profile-cpu1').classList.toggle('active', turn === 1);
+  document.getElementById('profile-cpu2').classList.toggle('active', turn === 2);
+  document.getElementById('profile-cpu3').classList.toggle('active', turn === 3);
+}
+
+function executeCpuTurn() {
+  if (isGameOver) return;
+
+  // プレイヤーが手札2枚以下でBUSHU未宣言のまま、CPUが実際にカードを出す／引くアクションを迎えた場合のみ指摘ペナルティ発生
+  if (players[0].length <= 2 && !bushuDeclared[0]) {
+    const noticeSpeaker = turn === 1 ? 2 : 1;
+    triggerCpuNotice(noticeSpeaker, "プレイヤー！ BŪSHU! を言い忘れたな！ ペナルティ1枚！", () => {
+      drawCardsSmart(0, 1);
+      renderUI();
+      continueCpuTurnExecution();
+    });
+    return;
+  }
+
+  continueCpuTurnExecution();
+}
+
+function continueCpuTurnExecution() {
+  if (isGameOver) return;
+  const cpuIdx = turn;
+  const hand = players[cpuIdx];
+
+  if (hand.length <= 2 && !bushuDeclared[cpuIdx]) {
+    if (Math.random() < 0.85) {
+      triggerCpuPressBushuButton(cpuIdx);
+    }
+  }
+
+  if (pendingDrawCount > 0) {
+    const counterDrawIdx = hand.findIndex(c => c.type === 'SPECIAL' && (c.effect === 'DRAW2' || c.effect === 'DRAW4'));
+    if (counterDrawIdx > -1) {
+      const played = hand.splice(counterDrawIdx, 1);
+      checkCpuMissedBushuAndProcess(played, cpuIdx);
+      return;
+    } else {
+      const hitAmount = pendingDrawCount; drawCardsSmart(cpuIdx, pendingDrawCount); pendingDrawCount = 0;
+      triggerDrawHitBanner(cpuIdx, hitAmount, () => { checkWinOrNextTurn(); }); return;
+    }
+  }
+
+  const specialIdx = hand.findIndex(c => c.type === 'SPECIAL');
+  if (specialIdx > -1) {
+    const played = hand.splice(specialIdx, 1);
+    checkCpuMissedBushuAndProcess(played, cpuIdx);
+    return;
+  }
+
+  const topBushuKey = wildSpecifiedBushu || topCard.bushu;
+
+  for (let i = 0; i < hand.length; i++) {
+    for (let j = i + 1; j < hand.length; j++) {
+      for (let k = j + 1; k < hand.length; k++) {
+        const match3 = findMatchingKanji([hand[i].value, hand[j].value, hand[k].value]);
+        if (match3) {
+          const hasCommon = activeParts.length === 0 || match3.parts.some(p => activeParts.includes(p));
+          const isSameBushuColor = (match3.bushu === topBushuKey);
+          if (hasCommon || isSameBushuColor) {
+            const played = [hand[k], hand[j], hand[i]];
+            hand.splice(k, 1); hand.splice(j, 1); hand.splice(i, 1);
+            checkCpuMissedBushuAndProcess(played, cpuIdx);
+            return;
+          }
+        }
+      }
+    }
+  }
+
+  for (let i = 0; i < hand.length; i++) {
+    for (let j = i + 1; j < hand.length; j++) {
+      const match2 = findMatchingKanji([hand[i].value, hand[j].value]);
+      if (match2) {
+        const hasCommon = activeParts.length === 0 || match2.parts.some(p => activeParts.includes(p));
+        const isSameBushuColor = (match2.bushu === topBushuKey);
+        
+        if (hasCommon || isSameBushuColor) {
+          const played = [hand[j], hand[i]];
+          hand.splice(j, 1); hand.splice(i, 1);
+          checkCpuMissedBushuAndProcess(played, cpuIdx);
+          return;
+        }
+      }
+    }
+  }
+
+  drawCardsSmart(cpuIdx, 1);
+  const newHand = players[cpuIdx];
+
+  for (let i = 0; i < newHand.length; i++) {
+    for (let j = i + 1; j < newHand.length; j++) {
+      for (let k = j + 1; k < newHand.length; k++) {
+        const match3 = findMatchingKanji([newHand[i].value, newHand[j].value, newHand[k].value]);
+        if (match3) {
+          const hasCommon = activeParts.length === 0 || match3.parts.some(p => activeParts.includes(p));
+          const isSameBushuColor = (match3.bushu === topBushuKey);
+          if (hasCommon || isSameBushuColor) {
+            const played = [newHand[k], newHand[j], newHand[i]];
+            newHand.splice(k, 1); newHand.splice(j, 1); newHand.splice(i, 1);
+            checkCpuMissedBushuAndProcess(played, cpuIdx);
+            return;
+          }
+        }
+      }
+    }
+  }
+  
+  for (let i = 0; i < newHand.length; i++) {
+    for (let j = i + 1; j < newHand.length; j++) {
+      const match2 = findMatchingKanji([newHand[i].value, newHand[j].value]);
+      if (match2) {
+        const hasCommon = activeParts.length === 0 || match2.parts.some(p => activeParts.includes(p));
+        const isSameBushuColor = (match2.bushu === topBushuKey);
+        if (hasCommon || isSameBushuColor) {
+          const played = [newHand[j], newHand[i]];
+          newHand.splice(j, 1); newHand.splice(i, 1);
+          checkCpuMissedBushuAndProcess(played, cpuIdx);
+          return;
+        }
+      }
+    }
+  }
+
+  checkWinOrNextTurn();
+}
+
+function checkCpuMissedBushuAndProcess(playedCards, cpuIdx) {
+  const afterCount = players[cpuIdx].length;
+  const missedBushu = (afterCount <= 2 && !bushuDeclared[cpuIdx]);
+
+  if (missedBushu) {
+    processPlayedCards(playedCards, cpuIdx);
+    const noticeSpeaker = cpuIdx === 1 ? 2 : 1;
+    triggerCpuNotice(noticeSpeaker, `${PLAYER_NAMES[cpuIdx]}！ BŪSHU! を言い忘れたな！ ペナルティ1枚！`, () => {
+      drawCardsSmart(cpuIdx, 1);
+      renderUI();
+      checkWinOrNextTurn();
+    });
+  } else {
+    processPlayedCards(playedCards, cpuIdx);
+    checkWinOrNextTurn();
+  }
+}
+
+function showResultModal(rankingList, isTimeUp = false) {
+  const modal = document.getElementById('result-modal');
+  const title = document.getElementById('result-title');
+  const desc = document.getElementById('result-desc');
+  const rankingTbody = document.getElementById('ranking-tbody');
+  const resultTbody = document.getElementById('result-tbody');
+
+  const winner = rankingList[0];
+  const isPlayerWinner = (winner.playerIdx === 0);
+
+  title.innerText = isPlayerWinner ? '🎉 あなたの勝ち！ BŪSHU!!' : `💻 ${PLAYER_NAMES[winner.playerIdx]} の勝ち！`;
+  desc.innerText = isTimeUp ? '制限時間が経過しました。' : `${PLAYER_NAMES[winner.playerIdx]} が上がり！`;
+
+  rankingTbody.innerHTML = '';
+  rankingList.forEach((item, index) => {
+    const tr = document.createElement('tr');
+    if (index === 0) { tr.style.backgroundColor = 'rgba(245, 158, 11, 0.2)'; tr.style.color = '#f59e0b'; }
+    tr.innerHTML = `<td>第 ${index + 1} 位</td><td>${PLAYER_NAMES[item.playerIdx]}</td><td>${item.count} 枚</td>`;
+    rankingTbody.appendChild(tr);
+  });
+
+  resultTbody.innerHTML = '';
+  historyCompletedKanji.forEach(item => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="color:#38bdf8; font-weight:bold;">${PLAYER_NAMES[item.playerIdx]}</td><td style="font-size:18px; font-weight:bold; color:#f59e0b;">${item.kanji}</td><td>${item.parts}</td><td>${item.bushu}</td>`;
+    resultTbody.appendChild(tr);
+  });
+
+  modal.classList.remove('hidden');
+}
+
+function restartGame() {
+  document.getElementById('result-modal').classList.add('hidden');
+  initGame();
+}
